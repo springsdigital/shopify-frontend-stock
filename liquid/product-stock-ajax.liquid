@@ -1,0 +1,57 @@
+<script>
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
+
+// url state change catch
+var _wr = function(type) {
+    var orig = history[type];
+    return function() {
+        var rv = orig.apply(this, arguments);
+        var e = new Event(type);
+        e.arguments = arguments;
+        window.dispatchEvent(e);
+        return rv;
+    };
+};
+history.pushState = _wr('pushState'), history.replaceState = _wr('replaceState');
+
+window.addEventListener('replaceState', function(e) {
+  	$('#store-pickup-availability').html('Cargando...');
+    $.ajax({
+    url: '[YOUR-URL]/?variant_id='+getUrlParameter('variant'),
+    success: function(response) {
+      $('#store-pickup-availability').html(response);
+    },
+    error: function() {
+      console.log("No se ha podido obtener la información");
+      $('#store-pickup-availability').html('Error, por favor reintenta');
+    }
+  });
+});
+
+// display the stock
+$( document ).ready(function() {
+    $.ajax({
+    url: '[YOUR-URL]/?variant_id={{ current_variant.id }}',
+    success: function(response) {
+      $('#store-pickup-availability').html(response);
+    },
+    error: function() {
+      console.log("No se ha podido obtener la información");
+      $('#store-pickup-availability').html('Error, por favor reintenta');
+    }
+  });
+});
+</script>
