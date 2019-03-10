@@ -28,7 +28,7 @@ var _wr = function(type) {
 history.pushState = _wr('pushState'), history.replaceState = _wr('replaceState');
 
 window.addEventListener('replaceState', function(e) {
-  	$('#store-pickup-availability').html('Cargando...');
+    $('#store-pickup-availability').html('Cargando...');
     $.ajax({
     url: '[YOUR-URL]/?variant_id='+getUrlParameter('variant'),
     success: function(response) {
